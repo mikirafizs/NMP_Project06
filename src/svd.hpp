@@ -96,7 +96,7 @@ inline void vector_to_file(std::vector <double> &v, std::string name_of_file){
     if(!pfile.is_open()){
         std::cerr << "Cannot open file. \n";
     }
-    pfile << std::setprecision(6);
+    pfile << std::setprecision(16);
     for(std::size_t i = 0; i < vn; i++){
         pfile << v[i] << "\n";
     }
