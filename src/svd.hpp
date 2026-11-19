@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 const double x_a = 0;
 const double x_b = 3*std::numbers::pi;
@@ -45,11 +46,14 @@ inline void matrix_to_file(std::vector <double> &A, std::string name_of_file, st
     if(!pfile.is_open()){
         std::cerr << "Cannot open file. \n";
     }
-
-    for(std::size_t j = 0; j < m; j++){
-        for(std::size_t i = 0; i < n; i++){
-            pfile << A[i+ldA*j] << "\n";
+    pfile << std::setprecision(6);
+    for(std::size_t i = 0; i < m; i++){
+        pfile << "|| ";
+        for(std::size_t j = 0; j < n; j++){
+            pfile << std::setw(16) << A[j + ldA*i];
+            if(j + 1 < n) pfile << " | ";
         }
+    pfile << " ||\n";
     }
     pfile.close();
 }
@@ -66,5 +70,36 @@ inline std::vector <double> A_reconstruction(std::vector <double> &s, std::vecto
         }
     }
     return reconstructed;
+}
+
+inline std::vector <double> coefficients(std::vector <double> &s, std::vector <double> &u, std::vector <double> &vt, std::vector <double> &y, std::size_t m, std::size_t n){
+    std::vector <double> c(n, 0.0);
+
+    for(std::size_t k = 0; k < n; k++){
+        double p = 0;
+        for(std::size_t i = 0; i < m; i++){
+            p += u[i*n + k] * y[i];
+        }
+        double w = p/s[k];
+        for(std::size_t j = 0; j < n; j++){
+            c[j] += w * vt[k*n + j];
+        }
+    }
+    return c;
+}
+
+inline void vector_to_file(std::vector <double> &v, std::string name_of_file){
+    std::size_t vn = v.size();
+    std::ostringstream path;
+    path << "../data/" << name_of_file <<".csv";
+    std::ofstream pfile(path.str());
+    if(!pfile.is_open()){
+        std::cerr << "Cannot open file. \n";
+    }
+    pfile << std::setprecision(6);
+    for(std::size_t i = 0; i < vn; i++){
+        pfile << v[i] << "\n";
+    }
+    pfile.close();
 }
 
